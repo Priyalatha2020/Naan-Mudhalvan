@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Authentication System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .toggle {
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: #007bff;
+    }
+    #message {
+      text-align: center;
+      color: red;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="formTitle">Register</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button id="authButton" onclick="handleAuth()">Register</button>
+    <div class="toggle" onclick="toggleForm()">Already have an account? Login</div>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    let isLogin = false;
+
+    function toggleForm() {
+      isLogin = !isLogin;
+      document.getElementById('formTitle').textContent = isLogin ? 'Login' : 'Register';
+      document.getElementById('authButton').textContent = isLogin ? 'Login' : 'Register';
+      document.querySelector('.toggle').textContent = isLogin 
+        ? "Don't have an account? Register" 
+        : "Already have an account? Login";
+      document.getElementById('message').textContent = '';
+    }
+
+    function handleAuth() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('message');
+
+      if (!username || !password) {
+        message.textContent = 'Please fill all fields.';
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+      if (isLogin) {
+        if (users[username] && users[username] === password) {
+          message.style.color = 'green';
+          message.textContent = 'Login successful!';
+        } else {
+          message.style.color = 'red';
+          message.textContent = 'Invalid username or password.';
+        }
+      } else {
+        if (users[username]) {
+          message.style.color = 'red';
+          message.textContent = 'Username already exists.';
+        } else {
+          users[username] = password;
+          localStorage.setItem('users', JSON.stringify(users));
+          message.style.color = 'green';
+          message.textContent = 'Registration successful! You can now log in.';
+          toggleForm();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
